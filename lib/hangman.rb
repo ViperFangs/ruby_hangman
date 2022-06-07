@@ -45,12 +45,12 @@ class Hangman
     word_file = File.open('hangman_words.txt', 'r')
     self.secret_word = select_secret_word(word_file)
     self.guess_array = create_underscore_array(secret_word.length)
-    puts secret_word.to_s
+    puts secret_word.join('')
 
     until guess_array == secret_word || available_moves == 0
 
       # system('clear')
-      puts "Incorrect characters: #{incorrect_guess_array.join(' ')}" unless incorrect_guess_array.empty?
+      puts "Incorrect characters guessed: #{incorrect_guess_array.join(' ')}" unless incorrect_guess_array.empty?
       puts
       puts guess_array.join(' ')
       puts
