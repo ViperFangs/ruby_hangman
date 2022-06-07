@@ -1,16 +1,23 @@
 word_file = File.open('hangman_words.txt', 'r')
 
-def extract_words_from_file(file)
+def select_secret_word(file)
   words = []
   until file.eof?
     current_word = file.readline.strip
     words.push(current_word) if current_word.length >= 5 && current_word.length <=12
   end
-  return words
+  return words.sample.split('')
 end
 
-word_list = extract_words_from_file(word_file)
+def create_underscore_array(length)
+  underscore_array = []
+  length.times do 
+    underscore_array.push('_')
+  end
+  underscore_array
+end
 
-game_word = word_list.sample.split('')
+secret_word = select_secret_word(word_file)
+correct_guess_array = create_underscore_array(secret_word.length)
 
-p game_word
+
