@@ -28,6 +28,7 @@ class Hangman
 
   def get_char
     begin
+      print "Enter a character: "
       char = gets.chomp 
       raise StandardError, 'Please enter a single character' unless char.length == 1
       raise StandardError, 'Please enter an alphabet' unless char.to_i == 0
@@ -49,7 +50,7 @@ class Hangman
     until guess_array == secret_word || available_moves == 0
 
       # system('clear')
-      puts incorrect_guess_array.to_s unless incorrect_guess_array.empty?
+      puts "Incorrect characters: #{incorrect_guess_array.join(' ')}" unless incorrect_guess_array.empty?
       puts
       puts guess_array.join(' ')
       puts
