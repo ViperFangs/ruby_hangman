@@ -15,6 +15,18 @@ def create_underscore_array(length)
   underscore_array
 end
 
+def get_char
+  begin
+    char = gets.chomp 
+    raise Exception, 'Please enter a single character' if char.length > 1
+    # raise Exception, 'Please enter an alphabet' if char.to_i.is_a? Numeric
+    char.downcase
+  rescue Exception => e
+    puts e
+    retry
+  end
+end
+
 def play_game
   word_file = File.open('hangman_words.txt', 'r')
   secret_word = select_secret_word(word_file)
@@ -22,8 +34,9 @@ def play_game
   puts secret_word.to_s
 
   until guess_array == secret_word
-    #change later so user can only enter one char
-    current_char = gets.chomp 
+    
+    current_char = get_char
+
     secret_word.each_with_index do |char, index|
       if current_char == char
         guess_array[index] = current_char
