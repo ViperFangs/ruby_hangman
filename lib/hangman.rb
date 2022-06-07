@@ -17,7 +17,21 @@ def create_underscore_array(length)
   underscore_array
 end
 
-secret_word = select_secret_word(word_file)
-correct_guess_array = create_underscore_array(secret_word.length)
+def play_game
+  secret_word = select_secret_word(word_file)
+  guess_array = create_underscore_array(secret_word.length)
+  puts secret_word.to_s
 
+  until guess_array == secret_word
+    #change later so user can only enter one char
+    current_char = gets.chomp 
+    secret_word.each_with_index do |char, index|
+      if current_char == char
+        guess_array[index] = current_char
+      end
+    end
+    puts guess_array.join(' ')
+  end
+end
 
+play_game
