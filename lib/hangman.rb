@@ -18,10 +18,10 @@ end
 def get_char
   begin
     char = gets.chomp 
-    raise Exception, 'Please enter a single character' if char.length > 1
+    raise StandardError, 'Please enter a single character' if char.length > 1
     # raise Exception, 'Please enter an alphabet' if char.to_i.is_a? Numeric
     char.downcase
-  rescue Exception => e
+  rescue StandardError => e
     puts e
     retry
   end
