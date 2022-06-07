@@ -19,7 +19,7 @@ def get_char
   begin
     char = gets.chomp 
     raise StandardError, 'Please enter a single character' if char.length > 1
-    # raise Exception, 'Please enter an alphabet' if char.to_i.is_a? Numeric
+    raise StandardError, 'Please enter an alphabet' unless char.to_i == 0
     char.downcase
   rescue StandardError => e
     puts e
