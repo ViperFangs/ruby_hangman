@@ -1,5 +1,3 @@
-word_file = File.open('hangman_words.txt', 'r')
-
 def select_secret_word(file)
   words = []
   until file.eof?
@@ -18,6 +16,7 @@ def create_underscore_array(length)
 end
 
 def play_game
+  word_file = File.open('hangman_words.txt', 'r')
   secret_word = select_secret_word(word_file)
   guess_array = create_underscore_array(secret_word.length)
   puts secret_word.to_s
