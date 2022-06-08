@@ -1,0 +1,24 @@
+---
+:guess_array:
+- _
+- _
+- _
+- _
+- _
+- _
+:incorrect_guess_array:
+- a
+- s
+- f
+:available_moves: 9
+:guessed_characters_array:
+- a
+- s
+- f
+:secret_word:
+- m
+- o
+- m
+- e
+- n
+- t
