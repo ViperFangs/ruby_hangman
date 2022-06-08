@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'yaml'
+
+# class Hangman contains all methods to run the game Hangman
 class Hangman
   attr_accessor :secret_word, :guess_array, :guessed_characters_array, :incorrect_guess_array, :available_moves
 
@@ -32,18 +35,16 @@ class Hangman
   end
 
   def get_char
-    print 'Enter a character: '
-    char = gets.chomp
-    raise StandardError, 'Please enter a single character' unless char.length == 1
-    raise StandardError, 'Please enter an alphabet' unless char.to_i.zero?
+    print "\nGuess a character: "
+    input = gets.chomp
+    raise StandardError, "Please enter an alphabet or enter \'save\' to save the game" unless input.to_i.zero?
 
-    if guessed_characters_array.include?(char.downcase)
-      raise StandardError,
-            'You have already guessed this character'
-    end
+    save_game if input.downcase == 'save'
+    raise StandardError, "Please enter a single alphabet or enter \'save\' to save the game" unless input.length == 1
+    raise StandardError, 'You have already guessed this character' if guessed_characters_array.include?(input.downcase)
 
-    guessed_characters_array.push(char.downcase)
-    char.downcase
+    guessed_characters_array.push(input.downcase)
+    input.downcase
   rescue StandardError => e
     puts e
     retry
@@ -62,13 +63,12 @@ class Hangman
 
     until guess_array == secret_word || available_moves.zero?
 
-      # system('clear')
+      system('clear')
       puts "Incorrect characters guessed: #{incorrect_guess_array.join(' ')}" unless incorrect_guess_array.empty?
       puts
       puts guess_array.join(' ')
       puts
       puts "Available moves: #{available_moves}"
-      puts
 
       current_char = get_char
       include_char = false
@@ -102,6 +102,45 @@ class Hangman
   def retry_game?
     print "\nWould you like to restart the game?(y/n) "
     true if gets.chomp.downcase == 'y'
+  end
+
+  def save_game
+    print "\nEnter a name for the save file: "
+    user_input = gets.chomp
+
+    Dir.mkdir('saves') unless Dir.exist?('saves')
+    filename = "saves/#{user_input}.yaml"
+
+    save_file = create_yaml
+
+    File.open(filename, 'w') do |file|
+      file.puts save_file
+    end
+  end
+
+  def create_yaml
+    YAML.dump({
+                guess_array: guess_array,
+                incorrect_guess_array: incorrect_guess_array,
+                available_moves: available_moves,
+                guessed_characters_array: guessed_characters_array,
+                secret_word: secret_word
+              })
+  end
+
+  def load_game(filename)
+    filename = "saves/#{filename}"
+    load_file = YAML.safe_load filename
+    load_game(load_file[:secret_word], load_file[:guess_array], load_file[:guessed_characters_array], 
+              load_file[:incorrect_guess_array], load_file[:available_moves])
+  end
+
+  def load_game_change_variables(secret_word, guess_array, guessed_characters_array, incorrect_guess_array, available_moves)
+    self.secret_word = secret_word
+    self.guess_array = guess_array
+    self.guessed_characters_array = guessed_characters_array
+    self.incorrect_guess_array = incorrect_guess_array
+    self.available_moves = available_moves
   end
 end
 
