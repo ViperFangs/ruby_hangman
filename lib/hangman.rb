@@ -211,5 +211,3 @@ class Hangman
     self.available_moves = available_moves
   end
 end
-
-Hangman.new.start
