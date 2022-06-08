@@ -1,5 +1,6 @@
-class Hangman
+# frozen_string_literal: true
 
+class Hangman
   attr_accessor :secret_word, :guess_array, :guessed_characters_array, :incorrect_guess_array, :available_moves
 
   def initialize
@@ -17,33 +18,35 @@ class Hangman
     words = []
     until file.eof?
       current_word = file.readline.strip
-      words.push(current_word) if current_word.length >= 5 && current_word.length <=12
+      words.push(current_word) if current_word.length >= 5 && current_word.length <= 12
     end
-    return words.sample.split('')
+    words.sample.split('')
   end
 
   def create_underscore_array(length)
     underscore_array = []
-    length.times do 
+    length.times do
       underscore_array.push('_')
     end
     underscore_array
   end
 
   def get_char
-    begin
-      print "Enter a character: "
-      char = gets.chomp 
-      raise StandardError, 'Please enter a single character' unless char.length == 1
-      raise StandardError, 'Please enter an alphabet' unless char.to_i == 0
-      raise StandardError, 'You have already guessed this character' if self.guessed_characters_array.include?(char.downcase)
+    print 'Enter a character: '
+    char = gets.chomp
+    raise StandardError, 'Please enter a single character' unless char.length == 1
+    raise StandardError, 'Please enter an alphabet' unless char.to_i.zero?
 
-      guessed_characters_array.push(char.downcase)
-      char.downcase
-    rescue StandardError => e
-      puts e
-      retry
+    if guessed_characters_array.include?(char.downcase)
+      raise StandardError,
+            'You have already guessed this character'
     end
+
+    guessed_characters_array.push(char.downcase)
+    char.downcase
+  rescue StandardError => e
+    puts e
+    retry
   end
 
   def winner?
@@ -57,7 +60,7 @@ class Hangman
     self.guess_array = create_underscore_array(secret_word.length)
     puts secret_word.join('')
 
-    until guess_array == secret_word || available_moves == 0
+    until guess_array == secret_word || available_moves.zero?
 
       # system('clear')
       puts "Incorrect characters guessed: #{incorrect_guess_array.join(' ')}" unless incorrect_guess_array.empty?
@@ -78,7 +81,7 @@ class Hangman
       end
 
       if include_char == false
-        incorrect_guess_array.push(current_char) 
+        incorrect_guess_array.push(current_char)
         self.available_moves -= 1
       end
     end
