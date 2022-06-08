@@ -1,10 +1,14 @@
 class Hangman
 
-  attr_accessor :secret_word, :guess_array, :guessed_characters_array, :correct_guess_array, :incorrect_guess_array, :available_moves
+  attr_accessor :secret_word, :guess_array, :guessed_characters_array, :incorrect_guess_array, :available_moves
 
   def initialize
+    default_values
+  end
+
+  def default_values
     self.guessed_characters_array = []
-    self.correct_guess_array = []
+    self.guess_array = []
     self.incorrect_guess_array = []
     self.available_moves = 12
   end
@@ -33,6 +37,7 @@ class Hangman
       raise StandardError, 'Please enter a single character' unless char.length == 1
       raise StandardError, 'Please enter an alphabet' unless char.to_i == 0
       raise StandardError, 'You have already guessed this character' if self.guessed_characters_array.include?(char.downcase)
+
       guessed_characters_array.push(char.downcase)
       char.downcase
     rescue StandardError => e
@@ -41,7 +46,12 @@ class Hangman
     end
   end
 
+  def winner?
+    guess_array == secret_word
+  end
+
   def play_game
+    system('clear')
     word_file = File.open('hangman_words.txt', 'r')
     self.secret_word = select_secret_word(word_file)
     self.guess_array = create_underscore_array(secret_word.length)
@@ -61,11 +71,10 @@ class Hangman
       include_char = false
 
       secret_word.each_with_index do |char, index|
-        if current_char == char
-          guess_array[index] = current_char
-          correct_guess_array.push(current_char)
-          include_char = true
-        end
+        next unless current_char == char
+
+        guess_array[index] = current_char
+        include_char = true
       end
 
       if include_char == false
@@ -73,8 +82,23 @@ class Hangman
         self.available_moves -= 1
       end
     end
-    # puts
-    # puts guess_array.join(' ')
+
+    system('clear')
+    if winner?
+      puts "You won the game!\n"
+    else
+      puts "You ran out of moves :(\n"
+    end
+    puts "The secret word is #{secret_word.join('')}"
+
+    exit unless retry_game?
+    default_values
+    play_game
+  end
+
+  def retry_game?
+    print "\nWould you like to restart the game?(y/n) "
+    true if gets.chomp.downcase == 'y'
   end
 end
 
