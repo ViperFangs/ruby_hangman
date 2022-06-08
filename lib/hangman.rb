@@ -8,6 +8,9 @@ class Hangman
 
   def initialize
     default_values
+    word_file = File.open('hangman_words.txt', 'r')
+    self.secret_word = select_secret_word(word_file)
+    self.guess_array = create_underscore_array(secret_word.length)
   end
 
   def default_values
@@ -37,9 +40,8 @@ class Hangman
   def get_char
     print "\nGuess a character: "
     input = gets.chomp
+    return input if input.downcase == 'save' || input.downcase == 'load'
     raise StandardError, "Please enter an alphabet or enter \'save\' to save the game" unless input.to_i.zero?
-
-    save_game if input.downcase == 'save'
     raise StandardError, "Please enter a single alphabet or enter \'save\' to save the game" unless input.length == 1
     raise StandardError, 'You have already guessed this character' if guessed_characters_array.include?(input.downcase)
 
@@ -56,11 +58,6 @@ class Hangman
 
   def play_game
     system('clear')
-    word_file = File.open('hangman_words.txt', 'r')
-    self.secret_word = select_secret_word(word_file)
-    self.guess_array = create_underscore_array(secret_word.length)
-    puts secret_word.join('')
-
     until guess_array == secret_word || available_moves.zero?
 
       system('clear')
@@ -71,6 +68,14 @@ class Hangman
       puts "Available moves: #{available_moves}"
 
       current_char = get_char
+      if current_char == 'save'
+        save_game
+        puts "\nYour file has been saved"
+        exit
+      elsif current_char == 'load'
+        load_game('aarya')
+        play_game
+      end
       include_char = false
 
       secret_word.each_with_index do |char, index|
@@ -109,7 +114,7 @@ class Hangman
     user_input = gets.chomp
 
     Dir.mkdir('saves') unless Dir.exist?('saves')
-    filename = "saves/#{user_input}.yaml"
+    filename = "saves/#{user_input}.yml"
 
     save_file = create_yaml
 
@@ -129,10 +134,10 @@ class Hangman
   end
 
   def load_game(filename)
-    filename = "saves/#{filename}"
-    load_file = YAML.safe_load filename
-    load_game(load_file[:secret_word], load_file[:guess_array], load_file[:guessed_characters_array], 
-              load_file[:incorrect_guess_array], load_file[:available_moves])
+    filename = "saves/#{filename}.yml"
+    load_game_file = YAML.load_file filename
+    load_game_change_variables(load_game_file[:secret_word], load_game_file[:guess_array], load_game_file[:guessed_characters_array],
+                               load_game_file[:incorrect_guess_array], load_game_file[:available_moves])
   end
 
   def load_game_change_variables(secret_word, guess_array, guessed_characters_array, incorrect_guess_array, available_moves)
