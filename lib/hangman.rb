@@ -156,7 +156,7 @@ class Hangman
 
     exit unless retry_game?
     default_values
-    play_game
+    start
   end
 
   def retry_game?
