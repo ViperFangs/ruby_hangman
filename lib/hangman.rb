@@ -102,21 +102,13 @@ class Hangman
   end
 
   def play_game
-    system('clear')
     until guess_array == secret_word || available_moves.zero?
-
-      system('clear')
-      puts "Incorrect characters guessed: #{incorrect_guess_array.join(' ')}" unless incorrect_guess_array.empty?
-      puts
-      puts guess_array.join(' ')
-      puts
-      puts "Available moves: #{available_moves}"
+      play_game_ui
 
       current_char = get_char
       if current_char == 'save'
         save_game
-        puts "\nYour file has been saved"
-        exit
+        next
       end
       include_char = false
 
@@ -132,7 +124,19 @@ class Hangman
         self.available_moves -= 1
       end
     end
+    end_game
+  end
 
+  def play_game_ui
+    system('clear')
+    puts "Incorrect characters guessed: #{incorrect_guess_array.join(' ')}" unless incorrect_guess_array.empty?
+    puts
+    puts guess_array.join(' ')
+    puts
+    puts "Available moves: #{available_moves}"
+  end
+
+  def end_game
     system('clear')
     if winner?
       puts "You won the game!\n"
@@ -163,6 +167,14 @@ class Hangman
     File.open(filename, 'w') do |file|
       file.puts save_file
     end
+
+    puts "\nYour file has been saved"
+    exit unless continue_game?
+  end
+
+  def continue_game?
+    print "\nWould you like to continue the game?(y/n) "
+    true if gets.chomp.downcase == 'y'
   end
 
   def create_yaml
