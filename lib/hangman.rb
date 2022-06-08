@@ -4,7 +4,6 @@ require 'yaml'
 
 # class Hangman contains all methods to run the game Hangman
 class Hangman
-  attr_accessor :secret_word, :guess_array, :guessed_characters_array, :incorrect_guess_array, :available_moves
 
   def initialize
     default_values
@@ -18,11 +17,7 @@ class Hangman
   end
 
   def start
-    system('clear')
-    puts 'Instructions'
-    puts 'Would you like to start a new game or load a previous save?'
-    puts 'Enter 1 to start a new game'
-    puts 'Enter 2 to load a previous save'
+    start_screen
 
     print "\nEnter your option: "
     user_input = gets.chomp
@@ -34,7 +29,7 @@ class Hangman
     when '2'
       system('clear')
       begin
-        display_save_files
+        start unless display_save_files
         print "\nEnter the file name you would like to load: "
         user_input = gets.chomp
         raise StandardError unless File.exist? "saves/#{user_input}.yml"
@@ -50,8 +45,22 @@ class Hangman
     end
   end
 
+  private
+
+  attr_accessor :secret_word, :guess_array, :guessed_characters_array, :incorrect_guess_array, :available_moves
+
+  def start_screen
+    system('clear')
+    puts 'Hangman Game'
+    puts "\nWould you like to start a new game or load a previous save?"
+    puts 'Enter 1 to start a new game'
+    puts 'Enter 2 to load a previous save'
+  end
+
   def display_save_files
     save_files_array = Dir.children('saves')
+    return false if save_files_array.empty?
+
     puts "\nSave Files\n\n"
     save_files_array.each do |file_name|
       file_name.slice! File.extname(file_name)
@@ -83,7 +92,7 @@ class Hangman
   end
 
   def get_char
-    print "\nGuess a character: "
+    print "\nGuess a character or enter \'save\' to save the game: "
     input = gets.chomp
     return input if input.downcase == 'save'
     raise StandardError, "Please enter an alphabet or enter \'save\' to save the game" unless input.to_i.zero?
