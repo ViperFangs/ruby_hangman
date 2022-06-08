@@ -8,9 +8,6 @@ class Hangman
 
   def initialize
     default_values
-    word_file = File.open('hangman_words.txt', 'r')
-    self.secret_word = select_secret_word(word_file)
-    self.guess_array = create_underscore_array(secret_word.length)
   end
 
   def default_values
@@ -18,6 +15,54 @@ class Hangman
     self.guess_array = []
     self.incorrect_guess_array = []
     self.available_moves = 12
+  end
+
+  def start
+    system('clear')
+    puts 'Instructions'
+    puts 'Would you like to start a new game or load a previous save?'
+    puts 'Enter 1 to start a new game'
+    puts 'Enter 2 to load a previous save'
+
+    print "\nEnter your option: "
+    user_input = gets.chomp
+
+    case user_input
+    when '1'
+      initial_game_values
+      play_game
+    when '2'
+      system('clear')
+      begin
+        display_save_files
+        print "\nEnter the file name you would like to load: "
+        user_input = gets.chomp
+        raise StandardError unless File.exist? "saves/#{user_input}.yml"
+
+        load_game(user_input)
+        play_game
+      rescue StandardError
+        puts "Please provide a valid filename\n"
+        retry
+      end
+    else
+      start
+    end
+  end
+
+  def display_save_files
+    save_files_array = Dir.children('saves')
+    puts "\nSave Files\n\n"
+    save_files_array.each do |file_name|
+      file_name.slice! File.extname(file_name)
+      puts "\t#{file_name}"
+    end
+  end
+
+  def initial_game_values
+    word_file = File.open('hangman_words.txt', 'r')
+    self.secret_word = select_secret_word(word_file)
+    self.guess_array = create_underscore_array(secret_word.length)
   end
 
   def select_secret_word(file)
@@ -40,7 +85,7 @@ class Hangman
   def get_char
     print "\nGuess a character: "
     input = gets.chomp
-    return input if input.downcase == 'save' || input.downcase == 'load'
+    return input if input.downcase == 'save'
     raise StandardError, "Please enter an alphabet or enter \'save\' to save the game" unless input.to_i.zero?
     raise StandardError, "Please enter a single alphabet or enter \'save\' to save the game" unless input.length == 1
     raise StandardError, 'You have already guessed this character' if guessed_characters_array.include?(input.downcase)
@@ -72,9 +117,6 @@ class Hangman
         save_game
         puts "\nYour file has been saved"
         exit
-      elsif current_char == 'load'
-        load_game('aarya')
-        play_game
       end
       include_char = false
 
@@ -149,4 +191,4 @@ class Hangman
   end
 end
 
-Hangman.new.play_game
+Hangman.new.start
